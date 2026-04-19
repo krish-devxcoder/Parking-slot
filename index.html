@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Parking Slot Availability System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Smart Mobility Platform</p>
+          <h1>Smart Parking Slot Availability System</h1>
+          <p class="hero-copy">
+            Find open slots, reserve in seconds, manage bookings, and keep parking
+            operations organized from one live dashboard.
+          </p>
+        </div>
+        <div class="hero-card">
+          <p class="hero-stat-label">Live occupancy</p>
+          <p class="hero-stat" id="heroOccupancy">0%</p>
+          <p class="hero-note" id="heroSummary">Checking parking activity...</p>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="panel auth-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Access</p>
+              <h2>Register or sign in</h2>
+            </div>
+            <button class="ghost-button hidden" id="logoutButton">Logout</button>
+          </div>
+
+          <div id="authView">
+            <div class="tabs">
+              <button class="tab active" data-auth-tab="login">Login</button>
+              <button class="tab" data-auth-tab="register">Register</button>
+            </div>
+
+            <form id="loginForm" class="form">
+              <label>
+                Email
+                <input type="email" id="loginEmail" placeholder="user@example.com" required />
+              </label>
+              <label>
+                Password
+                <input type="password" id="loginPassword" placeholder="Enter password" required />
+              </label>
+              <button type="submit" class="primary-button">Login</button>
+              <p class="helper-text">
+                Admin demo: <strong>admin@parking.com</strong> / <strong>admin123</strong>
+              </p>
+            </form>
+
+            <form id="registerForm" class="form hidden">
+              <label>
+                Full name
+                <input type="text" id="registerName" placeholder="Your full name" required />
+              </label>
+              <label>
+                Email
+                <input type="email" id="registerEmail" placeholder="user@example.com" required />
+              </label>
+              <label>
+                Vehicle number
+                <input type="text" id="registerVehicle" placeholder="KA01AB1234" required />
+              </label>
+              <label>
+                Password
+                <input type="password" id="registerPassword" placeholder="Create password" required />
+              </label>
+              <button type="submit" class="primary-button">Create account</button>
+            </form>
+          </div>
+
+          <div id="sessionView" class="hidden">
+            <div class="session-card">
+              <p class="eyebrow">Current user</p>
+              <h3 id="sessionName"></h3>
+              <p id="sessionMeta"></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Availability</p>
+              <h2>Real-time parking slots</h2>
+            </div>
+            <p class="live-pill">Live refresh <span id="lastUpdated">--:--:--</span></p>
+          </div>
+          <div class="stats-grid" id="statsGrid"></div>
+          <div class="slot-grid" id="slotGrid"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Reservations</p>
+              <h2>Booking management</h2>
+            </div>
+          </div>
+          <div id="bookingPrompt" class="empty-state">
+            Sign in to reserve a parking slot and manage your current bookings.
+          </div>
+          <div id="bookingView" class="hidden">
+            <div class="booking-list" id="bookingList"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Alerts</p>
+              <h2>Notifications</h2>
+            </div>
+          </div>
+          <div class="notification-list" id="notificationList"></div>
+        </section>
+
+        <section class="panel hidden" id="adminPanel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Operations</p>
+              <h2>Admin dashboard</h2>
+            </div>
+          </div>
+
+          <form id="slotForm" class="form inline-form">
+            <label>
+              Slot name
+              <input type="text" id="slotName" placeholder="C1" required />
+            </label>
+            <label>
+              Zone
+              <input type="text" id="slotZone" placeholder="Basement" required />
+            </label>
+            <label>
+              Type
+              <select id="slotType">
+                <option value="Standard">Standard</option>
+                <option value="EV">EV</option>
+                <option value="Accessible">Accessible</option>
+                <option value="Premium">Premium</option>
+              </select>
+            </label>
+            <button type="submit" class="primary-button">Add slot</button>
+          </form>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Slot</th>
+                  <th>Zone</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="adminSlotTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <template id="slotTemplate">
+      <article class="slot-card">
+        <div class="slot-topline">
+          <span class="slot-name"></span>
+          <span class="slot-status"></span>
+        </div>
+        <p class="slot-zone"></p>
+        <p class="slot-type"></p>
+        <button class="primary-button slot-action"></button>
+      </article>
+    </template>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
